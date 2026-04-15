@@ -24,7 +24,287 @@ const getOffsets = (lat1, lon1, lat2, lon2) => {
   return { dx, dy };
 };
 
+// ═══════════════ THEME DEFINITIONS ═══════════════
+const THEMES = {
+  chrome: {
+    name: "Chrome",
+    swatch: "linear-gradient(135deg, #a1a1aa, #d4d4d8, #71717a)",
+    css: {
+      "--phosphor": "#d4d4d8",
+      "--phosphor-dim": "#a1a1aa",
+      "--phosphor-dark": "#27272a",
+      "--phosphor-glow": "rgba(212,212,216,0.15)",
+      "--amber": "#fbbf24",
+      "--amber-dim": "#d97706",
+      "--threat": "#ef4444",
+      "--threat-dim": "#b91c1c",
+      "--safe": "#e4e4e7",
+      "--safe-dim": "#a1a1aa",
+      "--bg-deep": "#09090b",
+      "--bg-panel": "#0e0e11",
+      "--bg-input": "#0a0a0d",
+      "--border-subtle": "rgba(161,161,170,0.1)",
+      "--border-med": "rgba(161,161,170,0.18)",
+      "--border-bright": "rgba(212,212,216,0.35)",
+      "--text-ghost": "rgba(161,161,170,0.4)",
+      "--text-dim": "rgba(161,161,170,0.7)",
+      "--text-mid": "rgba(212,212,216,0.85)",
+    },
+    svg: {
+      gridLine: "#27272a",
+      ringLabel: "#52525b",
+      fenceFill: "rgba(212,212,216,0.03)",
+      fenceStroke: "#d4d4d8",
+      centerDot: "#d4d4d8",
+      fenceLabel: "#d4d4d8",
+      trailDefault: "#a1a1aa",
+      trailInside: "#ffffff",
+      accFillDefault: "rgba(161,161,170,0.06)",
+      accFillInside: "rgba(255,255,255,0.06)",
+      accStrokeDefault: "#a1a1aa",
+      accStrokeInside: "#ffffff",
+      blipDefault: "#d4d4d8",
+      blipInside: "#ffffff",
+      labelDefault: "#d4d4d8",
+      labelInside: "#ffffff",
+      radialGrad: "rgba(212,212,216,0.03)",
+      glowCenter: "rgba(212,212,216,0.04)",
+      sweepA: "rgba(212,212,216,0.06)",
+      sweepB: "rgba(212,212,216,0.15)",
+      sweepC: "rgba(212,212,216,0.3)",
+      perimInBg: "rgba(255,255,255,0.06)",
+      perimInBorder: "rgba(255,255,255,0.2)",
+      perimOutBg: "rgba(161,161,170,0.06)",
+      perimOutBorder: "rgba(161,161,170,0.2)",
+    },
+  },
+  phosphor: {
+    name: "Phosphor",
+    swatch: "linear-gradient(135deg, #003d1f, #00ff88, #00cc6a)",
+    css: {
+      "--phosphor": "#00ff88",
+      "--phosphor-dim": "#00cc6a",
+      "--phosphor-dark": "#003d1f",
+      "--phosphor-glow": "rgba(0,255,136,0.15)",
+      "--amber": "#ffcc33",
+      "--amber-dim": "#cc8800",
+      "--threat": "#ff4455",
+      "--threat-dim": "#aa2233",
+      "--safe": "#33eeff",
+      "--safe-dim": "#0099bb",
+      "--bg-deep": "#030a06",
+      "--bg-panel": "#050e08",
+      "--bg-input": "#020805",
+      "--border-subtle": "rgba(0,255,136,0.1)",
+      "--border-med": "rgba(0,255,136,0.18)",
+      "--border-bright": "rgba(0,255,136,0.35)",
+      "--text-ghost": "rgba(0,255,136,0.4)",
+      "--text-dim": "rgba(0,255,136,0.65)",
+      "--text-mid": "rgba(0,255,136,0.85)",
+    },
+    svg: {
+      gridLine: "#003d1f",
+      ringLabel: "#00663a",
+      fenceFill: "rgba(0,255,136,0.03)",
+      fenceStroke: "#00ff88",
+      centerDot: "#00ff88",
+      fenceLabel: "#00ff88",
+      trailDefault: "#00ff88",
+      trailInside: "#00ddff",
+      accFillDefault: "rgba(0,255,136,0.08)",
+      accFillInside: "rgba(0,221,255,0.08)",
+      accStrokeDefault: "#00ff88",
+      accStrokeInside: "#00ddff",
+      blipDefault: "#fff",
+      blipInside: "#00ddff",
+      labelDefault: "#fff",
+      labelInside: "#33eeff",
+      radialGrad: "rgba(0,255,136,0.03)",
+      glowCenter: "rgba(0,255,136,0.06)",
+      sweepA: "rgba(0,255,136,0.08)",
+      sweepB: "rgba(0,255,136,0.2)",
+      sweepC: "rgba(0,255,136,0.4)",
+      perimInBg: "rgba(0,221,255,0.08)",
+      perimInBorder: "rgba(0,221,255,0.25)",
+      perimOutBg: "rgba(255,170,0,0.06)",
+      perimOutBorder: "rgba(255,170,0,0.2)",
+    },
+  },
+  cyber: {
+    name: "Cyber",
+    swatch: "linear-gradient(135deg, #4a0033, #ff2d95, #bf1d6f)",
+    css: {
+      "--phosphor": "#ff2d95",
+      "--phosphor-dim": "#bf1d6f",
+      "--phosphor-dark": "#3d0025",
+      "--phosphor-glow": "rgba(255,45,149,0.15)",
+      "--amber": "#ffd700",
+      "--amber-dim": "#cc9900",
+      "--threat": "#ff3333",
+      "--threat-dim": "#aa1111",
+      "--safe": "#00ffff",
+      "--safe-dim": "#009999",
+      "--bg-deep": "#0a0411",
+      "--bg-panel": "#0e0616",
+      "--bg-input": "#08030d",
+      "--border-subtle": "rgba(255,45,149,0.1)",
+      "--border-med": "rgba(255,45,149,0.18)",
+      "--border-bright": "rgba(255,45,149,0.35)",
+      "--text-ghost": "rgba(255,45,149,0.4)",
+      "--text-dim": "rgba(255,120,190,0.7)",
+      "--text-mid": "rgba(255,160,210,0.85)",
+    },
+    svg: {
+      gridLine: "#3d0025",
+      ringLabel: "#6b1045",
+      fenceFill: "rgba(255,45,149,0.03)",
+      fenceStroke: "#ff2d95",
+      centerDot: "#ff2d95",
+      fenceLabel: "#ff2d95",
+      trailDefault: "#ff2d95",
+      trailInside: "#00ffff",
+      accFillDefault: "rgba(255,45,149,0.08)",
+      accFillInside: "rgba(0,255,255,0.08)",
+      accStrokeDefault: "#ff2d95",
+      accStrokeInside: "#00ffff",
+      blipDefault: "#fff",
+      blipInside: "#00ffff",
+      labelDefault: "#fff",
+      labelInside: "#66ffff",
+      radialGrad: "rgba(255,45,149,0.03)",
+      glowCenter: "rgba(255,45,149,0.06)",
+      sweepA: "rgba(255,45,149,0.08)",
+      sweepB: "rgba(255,45,149,0.2)",
+      sweepC: "rgba(255,45,149,0.4)",
+      perimInBg: "rgba(0,255,255,0.08)",
+      perimInBorder: "rgba(0,255,255,0.25)",
+      perimOutBg: "rgba(255,215,0,0.06)",
+      perimOutBorder: "rgba(255,215,0,0.2)",
+    },
+  },
+  ocean: {
+    name: "Ocean",
+    swatch: "linear-gradient(135deg, #0a2a3f, #06d6a0, #118ab2)",
+    css: {
+      "--phosphor": "#06d6a0",
+      "--phosphor-dim": "#05a87e",
+      "--phosphor-dark": "#023d2e",
+      "--phosphor-glow": "rgba(6,214,160,0.15)",
+      "--amber": "#ffd166",
+      "--amber-dim": "#cc9933",
+      "--threat": "#ef476f",
+      "--threat-dim": "#b5214a",
+      "--safe": "#118ab2",
+      "--safe-dim": "#0a6680",
+      "--bg-deep": "#020e14",
+      "--bg-panel": "#04141d",
+      "--bg-input": "#020c11",
+      "--border-subtle": "rgba(6,214,160,0.1)",
+      "--border-med": "rgba(6,214,160,0.18)",
+      "--border-bright": "rgba(6,214,160,0.35)",
+      "--text-ghost": "rgba(6,214,160,0.4)",
+      "--text-dim": "rgba(6,214,160,0.65)",
+      "--text-mid": "rgba(6,214,160,0.85)",
+    },
+    svg: {
+      gridLine: "#023d2e",
+      ringLabel: "#046b50",
+      fenceFill: "rgba(6,214,160,0.03)",
+      fenceStroke: "#06d6a0",
+      centerDot: "#06d6a0",
+      fenceLabel: "#06d6a0",
+      trailDefault: "#06d6a0",
+      trailInside: "#118ab2",
+      accFillDefault: "rgba(6,214,160,0.08)",
+      accFillInside: "rgba(17,138,178,0.08)",
+      accStrokeDefault: "#06d6a0",
+      accStrokeInside: "#118ab2",
+      blipDefault: "#fff",
+      blipInside: "#118ab2",
+      labelDefault: "#fff",
+      labelInside: "#4ab8d4",
+      radialGrad: "rgba(6,214,160,0.03)",
+      glowCenter: "rgba(6,214,160,0.06)",
+      sweepA: "rgba(6,214,160,0.08)",
+      sweepB: "rgba(6,214,160,0.2)",
+      sweepC: "rgba(6,214,160,0.4)",
+      perimInBg: "rgba(17,138,178,0.08)",
+      perimInBorder: "rgba(17,138,178,0.25)",
+      perimOutBg: "rgba(255,209,102,0.06)",
+      perimOutBorder: "rgba(255,209,102,0.2)",
+    },
+  },
+  amber: {
+    name: "Amber",
+    swatch: "linear-gradient(135deg, #3d2800, #ffb300, #cc8800)",
+    css: {
+      "--phosphor": "#ffb300",
+      "--phosphor-dim": "#cc8800",
+      "--phosphor-dark": "#3d2800",
+      "--phosphor-glow": "rgba(255,179,0,0.15)",
+      "--amber": "#ff6b35",
+      "--amber-dim": "#cc4411",
+      "--threat": "#ff3333",
+      "--threat-dim": "#aa1111",
+      "--safe": "#ffe066",
+      "--safe-dim": "#ccaa33",
+      "--bg-deep": "#0a0700",
+      "--bg-panel": "#0e0b03",
+      "--bg-input": "#080600",
+      "--border-subtle": "rgba(255,179,0,0.1)",
+      "--border-med": "rgba(255,179,0,0.18)",
+      "--border-bright": "rgba(255,179,0,0.35)",
+      "--text-ghost": "rgba(255,179,0,0.4)",
+      "--text-dim": "rgba(255,200,80,0.65)",
+      "--text-mid": "rgba(255,220,130,0.85)",
+    },
+    svg: {
+      gridLine: "#3d2800",
+      ringLabel: "#6b4700",
+      fenceFill: "rgba(255,179,0,0.03)",
+      fenceStroke: "#ffb300",
+      centerDot: "#ffb300",
+      fenceLabel: "#ffb300",
+      trailDefault: "#ffb300",
+      trailInside: "#ffe066",
+      accFillDefault: "rgba(255,179,0,0.08)",
+      accFillInside: "rgba(255,224,102,0.08)",
+      accStrokeDefault: "#ffb300",
+      accStrokeInside: "#ffe066",
+      blipDefault: "#fff",
+      blipInside: "#ffe066",
+      labelDefault: "#fff",
+      labelInside: "#fff0aa",
+      radialGrad: "rgba(255,179,0,0.03)",
+      glowCenter: "rgba(255,179,0,0.06)",
+      sweepA: "rgba(255,179,0,0.08)",
+      sweepB: "rgba(255,179,0,0.2)",
+      sweepC: "rgba(255,179,0,0.4)",
+      perimInBg: "rgba(255,224,102,0.08)",
+      perimInBorder: "rgba(255,224,102,0.25)",
+      perimOutBg: "rgba(255,107,53,0.06)",
+      perimOutBorder: "rgba(255,107,53,0.2)",
+    },
+  },
+};
+
+const THEME_KEYS = Object.keys(THEMES);
+
 export default function App() {
+  // Theme State
+  const [themeKey, setThemeKey] = useState(() => {
+    try { return localStorage.getItem("radar-theme") || "chrome"; }
+    catch { return "chrome"; }
+  });
+  const theme = THEMES[themeKey] || THEMES.chrome;
+  const svg = theme.svg;
+
+  useEffect(() => {
+    const root = document.documentElement;
+    Object.entries(theme.css).forEach(([prop, val]) => root.style.setProperty(prop, val));
+    try { localStorage.setItem("radar-theme", themeKey); } catch {}
+  }, [themeKey, theme]);
+
   // Configuration State
   const [fenceLat, setFenceLat] = useState("20.2961");
   const [fenceLng, setFenceLng] = useState("85.8245");
@@ -252,7 +532,10 @@ export default function App() {
           <div className="mt-sm">
             <div className="section-label">Perimeter</div>
             {deviceLoc ? (
-              <span className={`perimeter-badge ${isSuccess ? "inside" : "outside"}`}>
+              <span className="perimeter-badge" style={isSuccess
+                ? { background: svg.perimInBg, border: `1px solid ${svg.perimInBorder}`, color: "var(--safe)" }
+                : { background: svg.perimOutBg, border: `1px solid ${svg.perimOutBorder}`, color: "var(--amber)" }
+              }>
                 <span className={`status-dot ${isSuccess ? "active" : ""}`}
                   style={isSuccess
                     ? { background: "var(--safe)", boxShadow: "0 0 6px var(--safe)" }
@@ -355,7 +638,7 @@ export default function App() {
           >
             <defs>
               <radialGradient id="radarBg" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="rgba(0,255,136,0.03)" />
+                <stop offset="0%" stopColor={svg.radialGrad} />
                 <stop offset="100%" stopColor="transparent" />
               </radialGradient>
               <filter id="glow">
@@ -372,19 +655,19 @@ export default function App() {
 
             {/* Diagonal axes */}
             <line x1={CENTER} y1={CENTER} x2={CENTER + CENTER * 0.707} y2={CENTER - CENTER * 0.707}
-              stroke="#003d1f" strokeWidth="0.5" opacity="0.3" />
+              stroke={svg.gridLine} strokeWidth="0.5" opacity="0.3" />
             <line x1={CENTER} y1={CENTER} x2={CENTER - CENTER * 0.707} y2={CENTER - CENTER * 0.707}
-              stroke="#003d1f" strokeWidth="0.5" opacity="0.3" />
+              stroke={svg.gridLine} strokeWidth="0.5" opacity="0.3" />
             <line x1={CENTER} y1={CENTER} x2={CENTER + CENTER * 0.707} y2={CENTER + CENTER * 0.707}
-              stroke="#003d1f" strokeWidth="0.5" opacity="0.3" />
+              stroke={svg.gridLine} strokeWidth="0.5" opacity="0.3" />
             <line x1={CENTER} y1={CENTER} x2={CENTER - CENTER * 0.707} y2={CENTER + CENTER * 0.707}
-              stroke="#003d1f" strokeWidth="0.5" opacity="0.3" />
+              stroke={svg.gridLine} strokeWidth="0.5" opacity="0.3" />
 
             {/* Primary axes */}
             <line x1={CENTER} y1="0" x2={CENTER} y2={VIEWBOX_SIZE}
-              stroke="#003d1f" strokeWidth="1" opacity="0.5" />
+              stroke={svg.gridLine} strokeWidth="1" opacity="0.5" />
             <line x1="0" y1={CENTER} x2={VIEWBOX_SIZE} y2={CENTER}
-              stroke="#003d1f" strokeWidth="1" opacity="0.5" />
+              stroke={svg.gridLine} strokeWidth="1" opacity="0.5" />
 
             {/* Distance rings with labels */}
             {[0.25, 0.5, 0.75, 1].map((mult) => (
@@ -392,7 +675,7 @@ export default function App() {
                 <circle
                   cx={CENTER} cy={CENTER} r={CENTER * mult}
                   fill="none"
-                  stroke="#003d1f"
+                  stroke={svg.gridLine}
                   strokeWidth={mult === 1 ? "1.5" : "0.8"}
                   strokeDasharray={mult === 1 ? "" : "3 6"}
                   opacity="0.5"
@@ -400,7 +683,7 @@ export default function App() {
                 <text
                   x={CENTER + 6}
                   y={CENTER - CENTER * mult + 14}
-                  fill="#00663a"
+                  fill={svg.ringLabel}
                   fontSize="12"
                   fontFamily="'Orbitron', monospace"
                   opacity="0.8"
@@ -413,21 +696,21 @@ export default function App() {
             {/* Geofence boundary */}
             <circle
               cx={CENTER} cy={CENTER} r={geofenceRadius * scale}
-              fill="rgba(0, 255, 136, 0.03)"
-              stroke="#00ff88"
+              fill={svg.fenceFill}
+              stroke={svg.fenceStroke}
               strokeWidth="1.5"
               strokeDasharray="8 5"
               opacity="0.6"
             />
 
             {/* Center target dot */}
-            <circle cx={CENTER} cy={CENTER} r="3" fill="#00ff88" filter="url(#glow)" />
+            <circle cx={CENTER} cy={CENTER} r="3" fill={svg.centerDot} filter="url(#glow)" />
             <circle cx={CENTER} cy={CENTER} r="1.5" fill="#fff" />
 
             {/* Target label */}
             <text
               x={CENTER + 10} y={CENTER - 10}
-              fill="#00ff88" fontSize="12"
+              fill={svg.fenceLabel} fontSize="12"
               fontFamily="'Orbitron', monospace" fontWeight="600"
               opacity="0.9"
             >
@@ -452,7 +735,7 @@ export default function App() {
                       })
                       .join(" ")}
                     fill="none"
-                    stroke={isSuccess ? "#00ddff" : "#00ff88"}
+                    stroke={isSuccess ? svg.trailInside : svg.trailDefault}
                     strokeWidth="1.5"
                     opacity="0.4"
                     strokeLinejoin="round"
@@ -462,26 +745,26 @@ export default function App() {
                 {/* Accuracy radius */}
                 <circle
                   cx={deviceSvgX} cy={deviceSvgY} r={accuracySvgR}
-                  fill={isSuccess ? "rgba(0, 221, 255, 0.08)" : "rgba(0, 255, 136, 0.08)"}
-                  stroke={isSuccess ? "#00ddff" : "#00ff88"}
+                  fill={isSuccess ? svg.accFillInside : svg.accFillDefault}
+                  stroke={isSuccess ? svg.accStrokeInside : svg.accStrokeDefault}
                   strokeWidth="0.5"
                   opacity="0.35"
                 />
 
                 {/* Blip crosshair */}
                 <line x1={deviceSvgX - 10} y1={deviceSvgY} x2={deviceSvgX - 4} y2={deviceSvgY}
-                  stroke={isSuccess ? "#00ddff" : "#fff"} strokeWidth="1" opacity="0.6" />
+                  stroke={isSuccess ? svg.blipInside : svg.blipDefault} strokeWidth="1" opacity="0.6" />
                 <line x1={deviceSvgX + 4} y1={deviceSvgY} x2={deviceSvgX + 10} y2={deviceSvgY}
-                  stroke={isSuccess ? "#00ddff" : "#fff"} strokeWidth="1" opacity="0.6" />
+                  stroke={isSuccess ? svg.blipInside : svg.blipDefault} strokeWidth="1" opacity="0.6" />
                 <line x1={deviceSvgX} y1={deviceSvgY - 10} x2={deviceSvgX} y2={deviceSvgY - 4}
-                  stroke={isSuccess ? "#00ddff" : "#fff"} strokeWidth="1" opacity="0.6" />
+                  stroke={isSuccess ? svg.blipInside : svg.blipDefault} strokeWidth="1" opacity="0.6" />
                 <line x1={deviceSvgX} y1={deviceSvgY + 4} x2={deviceSvgX} y2={deviceSvgY + 10}
-                  stroke={isSuccess ? "#00ddff" : "#fff"} strokeWidth="1" opacity="0.6" />
+                  stroke={isSuccess ? svg.blipInside : svg.blipDefault} strokeWidth="1" opacity="0.6" />
 
                 {/* Core blip */}
                 <circle
                   cx={deviceSvgX} cy={deviceSvgY} r="4"
-                  fill={isSuccess ? "#00ddff" : "#fff"}
+                  fill={isSuccess ? svg.blipInside : svg.blipDefault}
                   filter="url(#glow)"
                 />
 
@@ -489,7 +772,7 @@ export default function App() {
                 <circle
                   cx={deviceSvgX} cy={deviceSvgY} r="4"
                   fill="none"
-                  stroke={isSuccess ? "#00ddff" : "#fff"}
+                  stroke={isSuccess ? svg.blipInside : svg.blipDefault}
                   strokeWidth="1"
                 >
                   <animate attributeName="r" from="4" to="28" dur="2s" repeatCount="indefinite" />
@@ -499,7 +782,7 @@ export default function App() {
                 {/* Device label */}
                 <text
                   x={deviceSvgX + 14} y={deviceSvgY - 7}
-                  fill={isSuccess ? "#33eeff" : "#fff"}
+                  fill={isSuccess ? svg.labelInside : svg.labelDefault}
                   fontSize="11"
                   fontFamily="'Orbitron', monospace"
                   fontWeight="600"
@@ -509,7 +792,7 @@ export default function App() {
                 </text>
                 <text
                   x={deviceSvgX + 14} y={deviceSvgY + 7}
-                  fill={isSuccess ? "#33eeff" : "#fff"}
+                  fill={isSuccess ? svg.labelInside : svg.labelDefault}
                   fontSize="10"
                   fontFamily="'Share Tech Mono', monospace"
                   opacity="0.7"
@@ -651,6 +934,22 @@ export default function App() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* ── THEME PICKER ── */}
+        <div className="theme-picker">
+          <span className="theme-picker-label">Theme</span>
+          <div className="theme-picker-swatches">
+            {THEME_KEYS.map((key) => (
+              <button
+                key={key}
+                className={`theme-swatch ${themeKey === key ? "active" : ""}`}
+                style={{ background: THEMES[key].swatch }}
+                onClick={() => setThemeKey(key)}
+                title={THEMES[key].name}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
