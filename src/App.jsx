@@ -148,189 +148,161 @@ export default function App() {
   const isSuccess =
     deviceLoc?.distance !== null && deviceLoc?.distance <= geofenceRadius;
 
-  return (
-    <div className="h-screen w-screen overflow-hidden bg-slate-950 text-emerald-500 font-mono flex flex-col lg:flex-row selection:bg-emerald-900 selection:text-emerald-100">
-      {/* Background Grid Accent */}
-      <div
-        className="absolute inset-0 opacity-5 pointer-events-none z-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(#10b981 1px, transparent 1px), linear-gradient(90deg, #10b981 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      ></div>
+  // Distance percentage for bar
+  const distPct = deviceLoc?.distance != null
+    ? Math.min((deviceLoc.distance / radarRange) * 100, 100)
+    : 0;
 
-      {/* LEFT PANEL: Controls & Telemetry (Fixed Width) */}
-      <div className="lg:w-96 w-full h-full flex flex-col z-10 border-r border-slate-800 bg-slate-950/90 backdrop-blur">
-        {/* Header */}
-        <div className="p-6 border-b border-emerald-900 bg-black/40">
-          <h1 className="text-2xl font-bold tracking-widest uppercase text-emerald-400">
-            G-Fence CMD
-          </h1>
-          <p className="text-xs text-slate-500 uppercase tracking-widest mt-1">
-            Status:{" "}
-            {tracking ? (
-              <span className="text-emerald-400 animate-pulse">ACTIVE</span>
-            ) : (
-              <span className="text-slate-500">STANDBY</span>
-            )}
-          </p>
+  const distBarColor = isSuccess ? "var(--safe)" : deviceLoc?.distance > radarRange * 0.8 ? "var(--threat)" : "var(--phosphor)";
+
+  // Bearing calculation for telemetry
+  const getBearing = () => {
+    if (!deviceLoc) return null;
+    const tLat = parseFloat(targetLat);
+    const tLng = parseFloat(targetLng);
+    const dLon = toRad(deviceLoc.lng - tLng);
+    const y = Math.sin(dLon) * Math.cos(toRad(deviceLoc.lat));
+    const x = Math.cos(toRad(tLat)) * Math.sin(toRad(deviceLoc.lat)) -
+              Math.sin(toRad(tLat)) * Math.cos(toRad(deviceLoc.lat)) * Math.cos(dLon);
+    let brng = Math.atan2(y, x) * (180 / Math.PI);
+    return ((brng + 360) % 360).toFixed(0);
+  };
+
+  return (
+    <div className="radar-shell">
+
+      {/* ═══════════════ LEFT PANEL: CONFIG ═══════════════ */}
+      <div className="panel panel-left">
+        <div className="panel-header">
+          <h2>Command</h2>
+          <div className="status-bar">
+            <span className={`status-dot ${tracking ? "active" : "standby"}`} />
+            <span className="status-text" style={{ color: tracking ? "var(--phosphor)" : "var(--text-ghost)" }}>
+              {tracking ? "Tracking" : "Standby"}
+            </span>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
-          {/* Config Panel */}
-          <div className="space-y-4">
-            <h2 className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b border-slate-800 pb-2">
-              Target Coordinates
-            </h2>
-            <div className="space-y-3">
+        <div className="panel-body space-y">
+          {/* Target Coords */}
+          <div>
+            <div className="section-label">Target Coordinates</div>
+            <div className="space-y-sm">
               <div>
-                <label className="block text-[10px] uppercase text-slate-500 mb-1">
-                  Target LAT
-                </label>
+                <label className="field-label">Latitude</label>
                 <input
                   type="number"
                   value={targetLat}
                   onChange={(e) => setTargetLat(e.target.value)}
                   disabled={tracking}
-                  className="w-full bg-black text-emerald-400 p-2 text-sm rounded border border-slate-800 focus:border-emerald-500 outline-none transition-colors"
+                  className="field-input"
                 />
               </div>
               <div>
-                <label className="block text-[10px] uppercase text-slate-500 mb-1">
-                  Target LNG
-                </label>
+                <label className="field-label">Longitude</label>
                 <input
                   type="number"
                   value={targetLng}
                   onChange={(e) => setTargetLng(e.target.value)}
                   disabled={tracking}
-                  className="w-full bg-black text-emerald-400 p-2 text-sm rounded border border-slate-800 focus:border-emerald-500 outline-none transition-colors"
+                  className="field-input"
                 />
               </div>
             </div>
+          </div>
 
-            <h2 className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b border-slate-800 pb-2 mt-6">
-              Radar Parameters
-            </h2>
-            <div className="grid grid-cols-2 gap-3">
+          {/* Radar Params */}
+          <div>
+            <div className="section-label">Radar Parameters</div>
+            <div className="space-y-sm">
               <div>
-                <label className="block text-[10px] uppercase text-slate-500 mb-1">
-                  Radius (M)
-                </label>
+                <label className="field-label">Fence Radius (m)</label>
                 <input
                   type="number"
                   value={geofenceRadius}
                   onChange={(e) => setGeofenceRadius(Number(e.target.value))}
                   disabled={tracking}
-                  className="w-full bg-black text-emerald-400 p-2 text-sm rounded border border-slate-800 focus:border-emerald-500 outline-none transition-colors"
+                  className="field-input"
                 />
               </div>
               <div>
-                <label className="block text-[10px] uppercase text-slate-500 mb-1">
-                  Scope Range (M)
-                </label>
+                <label className="field-label">Scope Range (m)</label>
                 <input
                   type="number"
                   value={radarRange}
                   onChange={(e) => setRadarRange(Number(e.target.value))}
                   disabled={tracking}
-                  className="w-full bg-black text-emerald-400 p-2 text-sm rounded border border-slate-800 focus:border-emerald-500 outline-none transition-colors"
+                  className="field-input"
                 />
               </div>
             </div>
+          </div>
 
+          {/* Engage Button */}
+          <div className="mt-sm">
             <button
               onClick={tracking ? stopTracking : startTracking}
-              className={`w-full py-4 mt-6 text-sm font-bold uppercase tracking-widest rounded transition-all ${
-                tracking
-                  ? "bg-red-950/80 border border-red-900 text-red-500 hover:bg-red-900/80 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
-                  : "bg-emerald-950/80 border border-emerald-900 text-emerald-500 hover:bg-emerald-900/80 hover:text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-              }`}
+              className={`btn-engage ${tracking ? "disengage" : "engage"}`}
             >
-              {tracking ? "Terminate Tracking" : "Initialize Radar"}
+              {tracking ? "Terminate" : "Initialize"}
             </button>
           </div>
 
-          {/* Telemetry Stats */}
-          <div className="pt-4">
-            <h2 className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b border-slate-800 pb-2 mb-4">
-              Live Telemetry
-            </h2>
-            <div className="grid grid-cols-2 gap-y-6 gap-x-4 text-sm bg-black/40 p-4 rounded border border-slate-800/50">
-              <div>
-                <span className="block text-[10px] text-slate-600 uppercase mb-1">
-                  Distance
-                </span>
-                <span
-                  className={`text-lg font-bold ${isSuccess ? "text-sky-400" : "text-emerald-400"}`}
-                >
-                  {deviceLoc?.distance != null
-                    ? `${deviceLoc.distance.toFixed(1)}m`
-                    : "---"}
-                </span>
-              </div>
-              <div>
-                <span className="block text-[10px] text-slate-600 uppercase mb-1">
-                  Accuracy (±)
-                </span>
-                <span className="text-lg text-emerald-400">
-                  {deviceLoc?.accuracy
-                    ? `${deviceLoc.accuracy.toFixed(1)}m`
-                    : "---"}
-                </span>
-              </div>
-              <div>
-                <span className="block text-[10px] text-slate-600 uppercase mb-1">
-                  Speed
-                </span>
-                <span className="text-lg text-emerald-400">
-                  {deviceLoc?.speed
-                    ? `${(deviceLoc.speed * 3.6).toFixed(1)} km/h`
-                    : "0.0"}
+          {/* Perimeter Status */}
+          <div className="mt-sm">
+            <div className="section-label">Perimeter</div>
+            {deviceLoc ? (
+              <span className={`perimeter-badge ${isSuccess ? "inside" : "outside"}`}>
+                <span className={`status-dot ${isSuccess ? "active" : ""}`}
+                  style={isSuccess
+                    ? { background: "var(--safe)", boxShadow: "0 0 6px var(--safe)" }
+                    : { background: "var(--amber)" }
+                  }
+                />
+                {isSuccess ? "Inside Fence" : "Outside Fence"}
+              </span>
+            ) : (
+              <span className="perimeter-badge idle">No Signal</span>
+            )}
+          </div>
+
+          {/* Distance Bar */}
+          {deviceLoc && (
+            <div className="dist-bar-container">
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
+                <span className="field-label" style={{ marginBottom: 0 }}>Range</span>
+                <span style={{ fontSize: "9px", color: "var(--text-dim)", letterSpacing: "1px" }}>
+                  {deviceLoc.distance.toFixed(0)}m / {radarRange}m
                 </span>
               </div>
-              <div>
-                <span className="block text-[10px] text-slate-600 uppercase mb-1">
-                  Heading
-                </span>
-                <span className="text-lg text-emerald-400">
-                  {deviceLoc?.heading
-                    ? `${deviceLoc.heading.toFixed(0)}°`
-                    : "---"}
-                </span>
+              <div className="dist-bar-track">
+                <div
+                  className="dist-bar-fill"
+                  style={{
+                    width: `${distPct}%`,
+                    background: distBarColor,
+                    boxShadow: `0 0 6px ${distBarColor}`,
+                  }}
+                />
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Terminal Log */}
-        <div className="h-48 bg-black border-t border-slate-800 flex flex-col shrink-0">
-          <div className="bg-slate-900 text-[10px] px-3 py-1.5 text-slate-500 uppercase tracking-widest border-b border-slate-800 flex justify-between">
+        {/* SYSTEM LOG — bottom of left panel */}
+        <div className="log-terminal" style={{ height: "200px" }}>
+          <div className="log-header">
             <span>System Log</span>
-            <span>v2.1.0</span>
+            <span>{logs.length} entries</span>
           </div>
-          <div className="flex-1 overflow-y-auto p-3 text-xs space-y-1.5 font-mono scrollbar-hide">
+          <div className="log-scroll">
             {logs.length === 0 && (
-              <p className="text-slate-700 animate-pulse">
-                Awaiting commands...
-              </p>
+              <p className="log-idle">Awaiting commands…</p>
             )}
             {logs.map((log, i) => (
-              <div
-                key={i}
-                className={`flex gap-3 ${
-                  log.type === "error"
-                    ? "text-red-500"
-                    : log.type === "warn"
-                      ? "text-amber-500"
-                      : log.type === "success"
-                        ? "text-sky-400"
-                        : "text-emerald-600"
-                }`}
-              >
-                <span className="opacity-50 shrink-0">[{log.time}]</span>
-                <span className="break-words">{log.msg}</span>
+              <div key={i} className="log-entry">
+                <span className="log-ts">[{log.time}]</span>
+                <span className={`log-msg ${log.type}`}>{log.msg}</span>
               </div>
             ))}
             <div ref={logsEndRef} />
@@ -338,82 +310,133 @@ export default function App() {
         </div>
       </div>
 
-      {/* RIGHT PANEL: Big Radar (Fills remaining space) */}
-      <div className="flex-1 h-full flex items-center justify-center bg-black relative overflow-hidden z-10 p-8">
-        {/* Radar Overlay Gradients */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.08)_0%,transparent_60%)] pointer-events-none"></div>
+      {/* ═══════════════ CENTER: RADAR ═══════════════ */}
+      <div className="radar-center">
+        <div className="radar-glow" />
 
-        {/* Scale Indicator */}
-        <div className="absolute top-6 right-6 text-[10px] text-slate-600 text-right bg-black/50 p-2 rounded border border-slate-800">
-          RADAR RANGE: {radarRange}M<br />
-          GRID SCALE: {(radarRange / 4).toFixed(0)}M / RING
+        {/* Corner HUD overlays */}
+        <div className="corner-hud top-left">
+          RNG {radarRange}M<br />
+          SCL {(radarRange / 4).toFixed(0)}M/DIV
+        </div>
+        <div className="corner-hud top-right">
+          FNC {geofenceRadius}M<br />
+          {deviceLoc ? `DST ${deviceLoc.distance.toFixed(0)}M` : "DST ---"}
+        </div>
+        <div className="corner-hud bottom-left">
+          {deviceLoc ? (
+            <>
+              {deviceLoc.lat.toFixed(5)}°N<br />
+              {deviceLoc.lng.toFixed(5)}°E
+            </>
+          ) : (
+            <>---.-----°N<br />---.-----°E</>
+          )}
+        </div>
+        <div className="corner-hud bottom-right">
+          {deviceLoc?.speed != null
+            ? `SPD ${(deviceLoc.speed * 3.6).toFixed(1)} KPH`
+            : "SPD ---"}<br />
+          {deviceLoc?.heading != null
+            ? `HDG ${deviceLoc.heading.toFixed(0)}°`
+            : "HDG ---"}
         </div>
 
-        <div className="relative w-full max-w-[800px] aspect-square rounded-full border border-emerald-900/30 flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.05)]">
+        {/* Cardinal labels */}
+        <div className="radar-container">
+          <span className="cardinal n">N</span>
+          <span className="cardinal s">S</span>
+          <span className="cardinal e">E</span>
+          <span className="cardinal w">W</span>
+
           <svg
             viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}
-            className="absolute inset-0 w-full h-full"
+            style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}
           >
-            {/* Axes */}
-            <line
-              x1={CENTER}
-              y1="0"
-              x2={CENTER}
-              y2={VIEWBOX_SIZE}
-              stroke="#064e3b"
-              strokeWidth="1"
-              opacity="0.5"
-            />
-            <line
-              x1="0"
-              y1={CENTER}
-              x2={VIEWBOX_SIZE}
-              y2={CENTER}
-              stroke="#064e3b"
-              strokeWidth="1"
-              opacity="0.5"
-            />
+            <defs>
+              <radialGradient id="radarBg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(0,255,136,0.03)" />
+                <stop offset="100%" stopColor="transparent" />
+              </radialGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
 
-            {/* Distance Rings */}
+            {/* Background fill */}
+            <circle cx={CENTER} cy={CENTER} r={CENTER} fill="url(#radarBg)" />
+
+            {/* Diagonal axes */}
+            <line x1={CENTER} y1={CENTER} x2={CENTER + CENTER * 0.707} y2={CENTER - CENTER * 0.707}
+              stroke="#003d1f" strokeWidth="0.5" opacity="0.3" />
+            <line x1={CENTER} y1={CENTER} x2={CENTER - CENTER * 0.707} y2={CENTER - CENTER * 0.707}
+              stroke="#003d1f" strokeWidth="0.5" opacity="0.3" />
+            <line x1={CENTER} y1={CENTER} x2={CENTER + CENTER * 0.707} y2={CENTER + CENTER * 0.707}
+              stroke="#003d1f" strokeWidth="0.5" opacity="0.3" />
+            <line x1={CENTER} y1={CENTER} x2={CENTER - CENTER * 0.707} y2={CENTER + CENTER * 0.707}
+              stroke="#003d1f" strokeWidth="0.5" opacity="0.3" />
+
+            {/* Primary axes */}
+            <line x1={CENTER} y1="0" x2={CENTER} y2={VIEWBOX_SIZE}
+              stroke="#003d1f" strokeWidth="1" opacity="0.5" />
+            <line x1="0" y1={CENTER} x2={VIEWBOX_SIZE} y2={CENTER}
+              stroke="#003d1f" strokeWidth="1" opacity="0.5" />
+
+            {/* Distance rings with labels */}
             {[0.25, 0.5, 0.75, 1].map((mult) => (
-              <circle
-                key={mult}
-                cx={CENTER}
-                cy={CENTER}
-                r={CENTER * mult}
-                fill="none"
-                stroke="#064e3b"
-                strokeWidth="1"
-                strokeDasharray={mult === 1 ? "" : "4 4"}
-                opacity="0.6"
-              />
+              <g key={mult}>
+                <circle
+                  cx={CENTER} cy={CENTER} r={CENTER * mult}
+                  fill="none"
+                  stroke="#003d1f"
+                  strokeWidth={mult === 1 ? "1.5" : "0.8"}
+                  strokeDasharray={mult === 1 ? "" : "3 6"}
+                  opacity="0.5"
+                />
+                <text
+                  x={CENTER + 6}
+                  y={CENTER - CENTER * mult + 12}
+                  fill="#003d1f"
+                  fontSize="10"
+                  fontFamily="'Orbitron', monospace"
+                  opacity="0.7"
+                >
+                  {(radarRange * mult).toFixed(0)}m
+                </text>
+              </g>
             ))}
 
-            {/* Geofence Boundary */}
+            {/* Geofence boundary */}
             <circle
-              cx={CENTER}
-              cy={CENTER}
-              r={geofenceRadius * scale}
-              fill="rgba(16, 185, 129, 0.05)"
-              stroke="#10b981"
+              cx={CENTER} cy={CENTER} r={geofenceRadius * scale}
+              fill="rgba(0, 255, 136, 0.03)"
+              stroke="#00ff88"
               strokeWidth="1.5"
-              strokeDasharray="6 4"
+              strokeDasharray="8 5"
+              opacity="0.6"
             />
-            <circle cx={CENTER} cy={CENTER} r="4" fill="#10b981" />
+
+            {/* Center target dot */}
+            <circle cx={CENTER} cy={CENTER} r="3" fill="#00ff88" filter="url(#glow)" />
+            <circle cx={CENTER} cy={CENTER} r="1.5" fill="#fff" />
+
+            {/* Target label */}
             <text
-              x={CENTER + 10}
-              y={CENTER - 10}
-              fill="#10b981"
-              fontSize="12"
-              fontFamily="monospace"
-              fontWeight="bold"
+              x={CENTER + 10} y={CENTER - 10}
+              fill="#00ff88" fontSize="10"
+              fontFamily="'Orbitron', monospace" fontWeight="600"
+              opacity="0.8"
             >
-              TARGET
+              TGT
             </text>
 
             {/* Tracked Device */}
             {deviceLoc && (
-              <g className="transition-all duration-1000 ease-out">
+              <g style={{ transition: "all 1s ease-out" }}>
                 {/* Trail */}
                 {trail.length > 1 && (
                   <polyline
@@ -429,116 +452,207 @@ export default function App() {
                       })
                       .join(" ")}
                     fill="none"
-                    stroke={isSuccess ? "#38bdf8" : "#10b981"}
-                    strokeWidth="2"
-                    opacity="0.5"
+                    stroke={isSuccess ? "#00ddff" : "#00ff88"}
+                    strokeWidth="1.5"
+                    opacity="0.4"
+                    strokeLinejoin="round"
                   />
                 )}
 
-                {/* Accuracy Radius */}
+                {/* Accuracy radius */}
                 <circle
-                  cx={deviceSvgX}
-                  cy={deviceSvgY}
-                  r={accuracySvgR}
-                  fill={
-                    isSuccess
-                      ? "rgba(56, 189, 248, 0.15)"
-                      : "rgba(16, 185, 129, 0.15)"
-                  }
-                  stroke={isSuccess ? "#38bdf8" : "#10b981"}
-                  strokeWidth="1"
-                  opacity="0.4"
+                  cx={deviceSvgX} cy={deviceSvgY} r={accuracySvgR}
+                  fill={isSuccess ? "rgba(0, 221, 255, 0.08)" : "rgba(0, 255, 136, 0.08)"}
+                  stroke={isSuccess ? "#00ddff" : "#00ff88"}
+                  strokeWidth="0.5"
+                  opacity="0.35"
                 />
 
-                {/* Core Blip */}
+                {/* Blip crosshair */}
+                <line x1={deviceSvgX - 10} y1={deviceSvgY} x2={deviceSvgX - 4} y2={deviceSvgY}
+                  stroke={isSuccess ? "#00ddff" : "#fff"} strokeWidth="1" opacity="0.6" />
+                <line x1={deviceSvgX + 4} y1={deviceSvgY} x2={deviceSvgX + 10} y2={deviceSvgY}
+                  stroke={isSuccess ? "#00ddff" : "#fff"} strokeWidth="1" opacity="0.6" />
+                <line x1={deviceSvgX} y1={deviceSvgY - 10} x2={deviceSvgX} y2={deviceSvgY - 4}
+                  stroke={isSuccess ? "#00ddff" : "#fff"} strokeWidth="1" opacity="0.6" />
+                <line x1={deviceSvgX} y1={deviceSvgY + 4} x2={deviceSvgX} y2={deviceSvgY + 10}
+                  stroke={isSuccess ? "#00ddff" : "#fff"} strokeWidth="1" opacity="0.6" />
+
+                {/* Core blip */}
                 <circle
-                  cx={deviceSvgX}
-                  cy={deviceSvgY}
-                  r="5"
-                  fill={isSuccess ? "#38bdf8" : "#fff"}
+                  cx={deviceSvgX} cy={deviceSvgY} r="4"
+                  fill={isSuccess ? "#00ddff" : "#fff"}
+                  filter="url(#glow)"
                 />
 
-                {/* Ping Animation ring */}
+                {/* Ping animation */}
                 <circle
-                  cx={deviceSvgX}
-                  cy={deviceSvgY}
-                  r="5"
+                  cx={deviceSvgX} cy={deviceSvgY} r="4"
                   fill="none"
-                  stroke={isSuccess ? "#38bdf8" : "#fff"}
-                  strokeWidth="1.5"
+                  stroke={isSuccess ? "#00ddff" : "#fff"}
+                  strokeWidth="1"
                 >
-                  <animate
-                    attributeName="r"
-                    from="5"
-                    to="30"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    from="1"
-                    to="0"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
+                  <animate attributeName="r" from="4" to="28" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" from="0.8" to="0" dur="2s" repeatCount="indefinite" />
                 </circle>
 
+                {/* Device label */}
                 <text
-                  x={deviceSvgX + 12}
-                  y={deviceSvgY + 5}
-                  fill={isSuccess ? "#38bdf8" : "#fff"}
-                  fontSize="12"
-                  fontFamily="monospace"
-                  fontWeight="bold"
+                  x={deviceSvgX + 14} y={deviceSvgY - 6}
+                  fill={isSuccess ? "#00ddff" : "#fff"}
+                  fontSize="9"
+                  fontFamily="'Orbitron', monospace"
+                  fontWeight="600"
+                  opacity="0.8"
                 >
                   UPLINK
+                </text>
+                <text
+                  x={deviceSvgX + 14} y={deviceSvgY + 6}
+                  fill={isSuccess ? "#00ddff" : "#fff"}
+                  fontSize="8"
+                  fontFamily="'Share Tech Mono', monospace"
+                  opacity="0.5"
+                >
+                  {deviceLoc.distance.toFixed(0)}m
                 </text>
               </g>
             )}
           </svg>
 
-          {/* Sweep Animation */}
-          {tracking && (
-            <div
-              className="absolute inset-0 rounded-full mix-blend-screen pointer-events-none"
-              style={{
-                animation: "spin 4s linear infinite",
-                background:
-                  "conic-gradient(from 0deg, transparent 75%, rgba(16, 185, 129, 0.2) 100%)",
-                borderRight: "2px solid rgba(16, 185, 129, 0.6)",
-              }}
-            ></div>
-          )}
+          {/* Sweep animation */}
+          {tracking && <div className="sweep-arm" />}
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
+      {/* ═══════════════ RIGHT PANEL: TELEMETRY ═══════════════ */}
+      <div className="panel panel-right">
+        <div className="panel-header">
+          <h2>Telemetry</h2>
+          <div className="status-bar">
+            <span className={`status-dot ${deviceLoc ? "active" : "standby"}`}
+              style={deviceLoc ? { background: "var(--safe)", boxShadow: "0 0 6px var(--safe)" } : {}}
+            />
+            <span className="status-text" style={{ color: deviceLoc ? "var(--safe)" : "var(--text-ghost)" }}>
+              {deviceLoc ? "Signal Lock" : "No Signal"}
+            </span>
+          </div>
+        </div>
 
-        /* Ensure input number spinners are hidden for clean UI */
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        input[type="number"] {
-          -moz-appearance: textfield;
-        }
-      `}</style>
+        <div className="panel-body space-y">
+          {/* Primary Readouts */}
+          <div>
+            <div className="section-label">Primary</div>
+            <div className="telem-grid">
+              <div className="telem-cell">
+                <div className="telem-label">Distance</div>
+                <div className={`telem-value ${deviceLoc?.distance != null ? (isSuccess ? "alert" : "") : "na"}`}>
+                  {deviceLoc?.distance != null ? `${deviceLoc.distance.toFixed(1)}` : "---"}
+                </div>
+                {deviceLoc?.distance != null && (
+                  <span style={{ fontSize: "9px", color: "var(--text-ghost)", letterSpacing: "1px" }}>METERS</span>
+                )}
+              </div>
+              <div className="telem-cell">
+                <div className="telem-label">Accuracy</div>
+                <div className={`telem-value ${deviceLoc?.accuracy > 50 ? "warn" : deviceLoc?.accuracy != null ? "" : "na"}`}>
+                  {deviceLoc?.accuracy != null ? `±${deviceLoc.accuracy.toFixed(1)}` : "---"}
+                </div>
+                {deviceLoc?.accuracy != null && (
+                  <span style={{ fontSize: "9px", color: "var(--text-ghost)", letterSpacing: "1px" }}>METERS</span>
+                )}
+              </div>
+              <div className="telem-cell">
+                <div className="telem-label">Speed</div>
+                <div className={`telem-value ${deviceLoc ? "" : "na"}`}>
+                  {deviceLoc?.speed != null ? `${(deviceLoc.speed * 3.6).toFixed(1)}` : "0.0"}
+                </div>
+                <span style={{ fontSize: "9px", color: "var(--text-ghost)", letterSpacing: "1px" }}>KM/H</span>
+              </div>
+              <div className="telem-cell">
+                <div className="telem-label">Heading</div>
+                <div className={`telem-value ${deviceLoc?.heading != null ? "" : "na"}`}>
+                  {deviceLoc?.heading != null ? `${deviceLoc.heading.toFixed(0)}°` : "---"}
+                </div>
+                {deviceLoc?.heading != null && (
+                  <span style={{ fontSize: "9px", color: "var(--text-ghost)", letterSpacing: "1px" }}>DEG</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Bearing */}
+          <div>
+            <div className="section-label">Bearing to Device</div>
+            <div className="telem-cell" style={{ gridColumn: "span 2" }}>
+              <div className="telem-label">Azimuth</div>
+              <div className={`telem-value ${getBearing() ? "" : "na"}`}>
+                {getBearing() ? `${getBearing()}°` : "---"}
+              </div>
+            </div>
+          </div>
+
+          {/* Device Coordinates */}
+          <div>
+            <div className="section-label">Device Position</div>
+            <div className="coord-display">
+              <div className="coord-row">
+                <span className="coord-key">LAT</span>
+                <span className="coord-val">
+                  {deviceLoc ? deviceLoc.lat.toFixed(6) : "—"}
+                </span>
+              </div>
+              <div className="coord-row">
+                <span className="coord-key">LNG</span>
+                <span className="coord-val">
+                  {deviceLoc ? deviceLoc.lng.toFixed(6) : "—"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Target Reference */}
+          <div>
+            <div className="section-label">Target Reference</div>
+            <div className="coord-display">
+              <div className="coord-row">
+                <span className="coord-key">LAT</span>
+                <span className="coord-val" style={{ color: "var(--text-mid)" }}>
+                  {targetLat}
+                </span>
+              </div>
+              <div className="coord-row">
+                <span className="coord-key">LNG</span>
+                <span className="coord-val" style={{ color: "var(--text-mid)" }}>
+                  {targetLng}
+                </span>
+              </div>
+              <div className="coord-row" style={{ borderTop: "1px solid var(--border-subtle)", marginTop: "4px", paddingTop: "4px" }}>
+                <span className="coord-key">FENCE</span>
+                <span className="coord-val" style={{ color: "var(--text-mid)" }}>
+                  {geofenceRadius}m
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Trail History */}
+          {trail.length > 0 && (
+            <div>
+              <div className="section-label">Trail ({trail.length} pts)</div>
+              <div style={{ maxHeight: "120px", overflowY: "auto", fontSize: "9px", color: "var(--text-dim)", lineHeight: "1.8" }}>
+                {trail.map((t, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", opacity: 0.4 + (i / trail.length) * 0.6 }}>
+                    <span>#{i + 1}</span>
+                    <span>{t.lat.toFixed(5)}, {t.lng.toFixed(5)}</span>
+                    <span>{t.distance.toFixed(0)}m</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
