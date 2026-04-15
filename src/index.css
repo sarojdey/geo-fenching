@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
 /* Default theme is chrome — JS overrides these per theme */
 :root {
   --phosphor: #d4d4d8;
@@ -29,13 +29,15 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
   overflow: hidden;
   background: var(--bg-deep);
   color: var(--phosphor);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
 }
 
 ::selection {
@@ -44,10 +46,20 @@ html, body, #root {
 }
 
 /* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-med); border-radius: 2px; }
-* { scrollbar-width: thin; scrollbar-color: var(--border-med) transparent; }
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-med);
+  border-radius: 2px;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-med) transparent;
+}
 
 /* ── LAYOUT ── */
 .radar-shell {
@@ -100,7 +112,7 @@ html, body, #root {
 }
 
 .panel-header h2 {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 3px;
@@ -116,7 +128,7 @@ html, body, #root {
 
 /* ── SECTION DIVIDERS ── */
 .section-label {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 9px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
@@ -130,7 +142,7 @@ html, body, #root {
 }
 
 .section-label::before {
-  content: '▸';
+  content: "▸";
   color: var(--phosphor-dim);
   font-size: 7px;
 }
@@ -149,18 +161,22 @@ html, body, #root {
   width: 100%;
   background: var(--bg-input);
   color: var(--phosphor);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 14px;
   padding: 9px 12px;
   border: 1px solid var(--border-med);
   border-radius: 2px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .field-input:focus {
   border-color: var(--phosphor-dim);
-  box-shadow: 0 0 8px var(--phosphor-glow), inset 0 0 12px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 0 8px var(--phosphor-glow),
+    inset 0 0 12px rgba(0, 0, 0, 0.1);
 }
 
 .field-input:disabled {
@@ -174,13 +190,16 @@ html, body, #root {
   -webkit-appearance: none;
   margin: 0;
 }
-.field-input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.field-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
 
 /* ── MAIN ACTION BUTTON ── */
 .btn-engage {
   width: 100%;
   padding: 14px 0;
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 3px;
@@ -238,7 +257,7 @@ html, body, #root {
 }
 
 .telem-value {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--phosphor);
@@ -288,15 +307,20 @@ html, body, #root {
 }
 
 .status-text {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* ── COORDS DISPLAY ── */
@@ -324,7 +348,7 @@ html, body, #root {
   font-size: 14px;
   font-weight: bold;
   color: var(--phosphor);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
 }
 
 /* ── LOG TERMINAL ── */
@@ -337,7 +361,7 @@ html, body, #root {
 }
 
 .log-header {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 9px;
   letter-spacing: 2px;
   padding: 8px 14px;
@@ -367,11 +391,22 @@ html, body, #root {
   flex-shrink: 0;
 }
 
-.log-msg { word-break: break-all; white-space: normal; }
-.log-msg.info { color: var(--phosphor-dim); }
-.log-msg.warn { color: var(--amber); }
-.log-msg.error { color: var(--threat); }
-.log-msg.success { color: var(--safe); }
+.log-msg {
+  word-break: break-all;
+  white-space: normal;
+}
+.log-msg.info {
+  color: var(--phosphor-dim);
+}
+.log-msg.warn {
+  color: var(--amber);
+}
+.log-msg.error {
+  color: var(--threat);
+}
+.log-msg.success {
+  color: var(--safe);
+}
 
 .log-idle {
   color: var(--text-ghost);
@@ -390,7 +425,7 @@ html, body, #root {
 
 /* CRT Scanline overlay */
 .radar-center::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
@@ -406,10 +441,14 @@ html, body, #root {
 
 /* Vignette */
 .radar-center::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
   pointer-events: none;
   z-index: 9;
 }
@@ -417,7 +456,11 @@ html, body, #root {
 .radar-glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, var(--phosphor-glow) 0%, transparent 55%);
+  background: radial-gradient(
+    circle at center,
+    var(--phosphor-glow) 0%,
+    transparent 55%
+  );
   pointer-events: none;
   z-index: 1;
 }
@@ -441,7 +484,7 @@ html, body, #root {
 }
 
 .sweep-arm::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
@@ -454,12 +497,21 @@ html, body, #root {
     var(--phosphor-dim) 100%
   );
   mask-image: radial-gradient(circle, black 0%, black 48%, transparent 50%);
-  -webkit-mask-image: radial-gradient(circle, black 0%, black 48%, transparent 50%);
+  -webkit-mask-image: radial-gradient(
+    circle,
+    black 0%,
+    black 48%,
+    transparent 50%
+  );
 }
 
 @keyframes sweep-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── RADAR CORNER HUD ── */
@@ -473,10 +525,24 @@ html, body, #root {
   pointer-events: none;
 }
 
-.corner-hud.top-left { top: 12px; left: 16px; }
-.corner-hud.top-right { top: 12px; right: 16px; text-align: right; }
-.corner-hud.bottom-left { bottom: 12px; left: 16px; }
-.corner-hud.bottom-right { bottom: 12px; right: 16px; text-align: right; }
+.corner-hud.top-left {
+  top: 12px;
+  left: 16px;
+}
+.corner-hud.top-right {
+  top: 12px;
+  right: 16px;
+  text-align: right;
+}
+.corner-hud.bottom-left {
+  bottom: 12px;
+  left: 16px;
+}
+.corner-hud.bottom-right {
+  bottom: 12px;
+  right: 16px;
+  text-align: right;
+}
 
 /* ── DISTANCE BAR ── */
 .dist-bar-container {
@@ -495,7 +561,9 @@ html, body, #root {
 .dist-bar-fill {
   height: 100%;
   border-radius: 1px;
-  transition: width 0.8s ease-out, background 0.5s;
+  transition:
+    width 0.8s ease-out,
+    background 0.5s;
 }
 
 /* ── PERIMETER STATUS ── */
@@ -505,7 +573,7 @@ html, body, #root {
   gap: 6px;
   padding: 7px 12px;
   border-radius: 2px;
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -520,7 +588,7 @@ html, body, #root {
 /* ── CARDINAL LABELS ON RADAR ── */
 .cardinal {
   position: absolute;
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 2px;
@@ -529,16 +597,40 @@ html, body, #root {
   pointer-events: none;
 }
 
-.cardinal.n { top: 4%; left: 50%; transform: translateX(-50%); }
-.cardinal.s { bottom: 4%; left: 50%; transform: translateX(-50%); }
-.cardinal.e { right: 4%; top: 50%; transform: translateY(-50%); }
-.cardinal.w { left: 4%; top: 50%; transform: translateY(-50%); }
+.cardinal.n {
+  top: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.cardinal.s {
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.cardinal.e {
+  right: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.cardinal.w {
+  left: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
 /* ── UTIL ── */
-.space-y > * + * { margin-top: 12px; }
-.space-y-sm > * + * { margin-top: 8px; }
-.mt-sm { margin-top: 10px; }
-.mt-md { margin-top: 16px; }
+.space-y > * + * {
+  margin-top: 12px;
+}
+.space-y-sm > * + * {
+  margin-top: 8px;
+}
+.mt-sm {
+  margin-top: 10px;
+}
+.mt-md {
+  margin-top: 16px;
+}
 
 /* ── THEME PICKER ── */
 .theme-picker {
@@ -552,7 +644,7 @@ html, body, #root {
 }
 
 .theme-picker-label {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 9px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
@@ -587,7 +679,7 @@ html, body, #root {
 }
 
 .theme-swatch.active::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: -5px;
   border-radius: 50%;
