@@ -26,8 +26,8 @@ const getOffsets = (lat1, lon1, lat2, lon2) => {
 
 export default function App() {
   // Configuration State
-  const [targetLat, setTargetLat] = useState("20.2961");
-  const [targetLng, setTargetLng] = useState("85.8245");
+  const [fenceLat, setFenceLat] = useState("20.2961");
+  const [fenceLng, setFenceLng] = useState("85.8245");
   const [geofenceRadius, setGeofenceRadius] = useState(50);
   const [radarRange, setRadarRange] = useState(200);
 
@@ -52,8 +52,8 @@ export default function App() {
   }, [logs]);
 
   const startTracking = () => {
-    const tLat = parseFloat(targetLat);
-    const tLng = parseFloat(targetLng);
+    const tLat = parseFloat(fenceLat);
+    const tLng = parseFloat(fenceLng);
 
     if (isNaN(tLat) || isNaN(tLng)) {
       addLog("ERR: Invalid coordinate syntax.", "error");
@@ -66,7 +66,7 @@ export default function App() {
 
     setTracking(true);
     setTrail([]);
-    addLog("Uplink established. Awaiting GPS lock...", "info");
+    addLog("Tracking active. Awaiting GPS lock...", "info");
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (position) => {
@@ -93,11 +93,11 @@ export default function App() {
           );
         } else if (distance <= geofenceRadius) {
           addLog(
-            `ALERT: Target inside perimeter (${Math.round(distance)}m)`,
+            `ALERT: Device inside fence (${Math.round(distance)}m)`,
             "success",
           );
         } else {
-          addLog(`PING: Target distance ${Math.round(distance)}m`, "info");
+          addLog(`PING: Device ${Math.round(distance)}m from fence`, "info");
         }
       },
       (error) => {
@@ -114,7 +114,7 @@ export default function App() {
       watchIdRef.current = null;
     }
     setTracking(false);
-    addLog("Uplink terminated by user.", "warn");
+    addLog("Tracking terminated by user.", "warn");
   };
 
   useEffect(() => {
@@ -135,8 +135,8 @@ export default function App() {
 
   if (deviceLoc) {
     const { dx, dy } = getOffsets(
-      parseFloat(targetLat),
-      parseFloat(targetLng),
+      parseFloat(fenceLat),
+      parseFloat(fenceLng),
       deviceLoc.lat,
       deviceLoc.lng,
     );
@@ -158,8 +158,8 @@ export default function App() {
   // Bearing calculation for telemetry
   const getBearing = () => {
     if (!deviceLoc) return null;
-    const tLat = parseFloat(targetLat);
-    const tLng = parseFloat(targetLng);
+    const tLat = parseFloat(fenceLat);
+    const tLng = parseFloat(fenceLng);
     const dLon = toRad(deviceLoc.lng - tLng);
     const y = Math.sin(dLon) * Math.cos(toRad(deviceLoc.lat));
     const x = Math.cos(toRad(tLat)) * Math.sin(toRad(deviceLoc.lat)) -
@@ -186,14 +186,14 @@ export default function App() {
         <div className="panel-body space-y">
           {/* Target Coords */}
           <div>
-            <div className="section-label">Target Coordinates</div>
+            <div className="section-label">Fence Center</div>
             <div className="space-y-sm">
               <div>
                 <label className="field-label">Latitude</label>
                 <input
                   type="number"
-                  value={targetLat}
-                  onChange={(e) => setTargetLat(e.target.value)}
+                  value={fenceLat}
+                  onChange={(e) => setFenceLat(e.target.value)}
                   disabled={tracking}
                   className="field-input"
                 />
@@ -202,8 +202,8 @@ export default function App() {
                 <label className="field-label">Longitude</label>
                 <input
                   type="number"
-                  value={targetLng}
-                  onChange={(e) => setTargetLng(e.target.value)}
+                  value={fenceLng}
+                  onChange={(e) => setFenceLng(e.target.value)}
                   disabled={tracking}
                   className="field-input"
                 />
@@ -259,7 +259,7 @@ export default function App() {
                     : { background: "var(--amber)" }
                   }
                 />
-                {isSuccess ? "Inside Fence" : "Outside Fence"}
+                {isSuccess ? "Device Inside" : "Device Outside"}
               </span>
             ) : (
               <span className="perimeter-badge idle">No Signal</span>
@@ -321,7 +321,7 @@ export default function App() {
         </div>
         <div className="corner-hud top-right">
           FNC {geofenceRadius}M<br />
-          {deviceLoc ? `DST ${deviceLoc.distance.toFixed(0)}M` : "DST ---"}
+          {deviceLoc ? `DEV ${deviceLoc.distance.toFixed(0)}M` : "DEV ---"}
         </div>
         <div className="corner-hud bottom-left">
           {deviceLoc ? (
@@ -431,7 +431,7 @@ export default function App() {
               fontFamily="'Orbitron', monospace" fontWeight="600"
               opacity="0.9"
             >
-              TGT
+              FENCE
             </text>
 
             {/* Tracked Device */}
@@ -443,8 +443,8 @@ export default function App() {
                     points={trail
                       .map((p) => {
                         const offsets = getOffsets(
-                          parseFloat(targetLat),
-                          parseFloat(targetLng),
+                          parseFloat(fenceLat),
+                          parseFloat(fenceLng),
                           p.lat,
                           p.lng,
                         );
@@ -505,7 +505,7 @@ export default function App() {
                   fontWeight="600"
                   opacity="0.9"
                 >
-                  UPLINK
+                  DEVICE
                 </text>
                 <text
                   x={deviceSvgX + 14} y={deviceSvgY + 7}
@@ -583,7 +583,7 @@ export default function App() {
 
           {/* Bearing */}
           <div>
-            <div className="section-label">Bearing to Device</div>
+            <div className="section-label">Bearing from Fence</div>
             <div className="telem-cell" style={{ gridColumn: "span 2" }}>
               <div className="telem-label">Azimuth</div>
               <div className={`telem-value ${getBearing() ? "" : "na"}`}>
@@ -613,18 +613,18 @@ export default function App() {
 
           {/* Target Reference */}
           <div>
-            <div className="section-label">Target Reference</div>
+            <div className="section-label">Fence Center</div>
             <div className="coord-display">
               <div className="coord-row">
                 <span className="coord-key">LAT</span>
                 <span className="coord-val" style={{ color: "var(--text-mid)" }}>
-                  {targetLat}
+                  {fenceLat}
                 </span>
               </div>
               <div className="coord-row">
                 <span className="coord-key">LNG</span>
                 <span className="coord-val" style={{ color: "var(--text-mid)" }}>
-                  {targetLng}
+                  {fenceLng}
                 </span>
               </div>
               <div className="coord-row" style={{ borderTop: "1px solid var(--border-subtle)", marginTop: "4px", paddingTop: "4px" }}>
