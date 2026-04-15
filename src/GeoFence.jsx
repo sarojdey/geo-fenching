@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 // Radius of the Earth in meters
 const R = 6371e3;
 
-// Haversine formula to get exact distance in meters
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const toRad = (value) => (value * Math.PI) / 180;
   const φ1 = toRad(lat1);
@@ -19,9 +18,8 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
-// Flat-surface approximation to get X/Y offset in meters
 const getOffsets = (lat1, lon1, lat2, lon2) => {
-  const dy = (lat2 - lat1) * 111320; // Rough meters per degree lat
+  const dy = (lat2 - lat1) * 111320;
   const dx = (lon2 - lon1) * (111320 * Math.cos(lat1 * (Math.PI / 180)));
   return { dx, dy };
 };
@@ -32,37 +30,44 @@ export default function GeofenceRadar() {
 
   const [tracking, setTracking] = useState(false);
   const [deviceLoc, setDeviceLoc] = useState(null);
-  const [statusMsg, setStatusMsg] = useState("Idle. Enter target coordinates.");
+  const [statusMsg, setStatusMsg] = useState(
+    "System idle. Awaiting coordinates.",
+  );
 
   const watchIdRef = useRef(null);
-  const RADAR_RANGE_M = 100; // How many meters from center to edge of radar
+
+  // SVG Viewport constraints
+  const RADAR_RANGE_M = 100;
   const GEOFENCE_RADIUS_M = 50;
 
   const startTracking = () => {
     if (!targetLat || !targetLng || isNaN(targetLat) || isNaN(targetLng)) {
-      setStatusMsg("Error: Invalid target coordinates.");
+      setStatusMsg("ERR: Invalid target coordinates.");
       return;
     }
 
     if (!navigator.geolocation) {
-      setStatusMsg("Error: Geolocation not supported by this browser.");
+      setStatusMsg("ERR: Geolocation hardware missing.");
       return;
     }
 
     setTracking(true);
-    setStatusMsg("Waking up GPS hardware... waiting for lock.");
+    setStatusMsg("Establishing GPS lock...");
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude, accuracy } = position.coords;
 
-        // Strategy: Filter out garbage signals
         if (accuracy > 50) {
           setStatusMsg(
-            `GPS too weak. Accuracy: ${Math.round(accuracy)}m. Move outside.`,
+            `WARN: Signal weak. Margin of error: ${Math.round(accuracy)}m.`,
           );
-          // We still update state to show the massive margin of error on radar
-          setDeviceLoc({ lat: latitude, lng: longitude, accuracy });
+          setDeviceLoc({
+            lat: latitude,
+            lng: longitude,
+            accuracy,
+            distance: null,
+          });
           return;
         }
 
@@ -76,17 +81,17 @@ export default function GeofenceRadar() {
         setDeviceLoc({ lat: latitude, lng: longitude, accuracy, distance });
 
         if (distance <= GEOFENCE_RADIUS_M) {
-          setStatusMsg("Geofence Success: Target Acquired.");
+          setStatusMsg("SUCCESS: Target inside geofence perimeter.");
         } else {
-          setStatusMsg(`Tracking: ${Math.round(distance)}m away.`);
+          setStatusMsg(`TRACKING: Target is ${Math.round(distance)}m out.`);
         }
       },
       (error) => {
         setTracking(false);
-        setStatusMsg(`Error: ${error.message}`);
+        setStatusMsg(`ERR: ${error.message}`);
       },
       {
-        enableHighAccuracy: true, // Non-negotiable
+        enableHighAccuracy: true,
         maximumAge: 0,
         timeout: 15000,
       },
@@ -100,7 +105,7 @@ export default function GeofenceRadar() {
     }
     setTracking(false);
     setDeviceLoc(null);
-    setStatusMsg("Tracking stopped.");
+    setStatusMsg("Uplink terminated.");
   };
 
   useEffect(() => {
@@ -110,9 +115,11 @@ export default function GeofenceRadar() {
     };
   }, []);
 
-  // Calculate UI positions
-  let deviceX = 50; // Center %
-  let deviceY = 50; // Center %
+  // SVG Coordinate mapping
+  // Center of SVG is 100,100
+  let deviceX = 100;
+  let deviceY = 100;
+  let accuracyR = 0;
 
   if (deviceLoc && targetLat && targetLng) {
     const { dx, dy } = getOffsets(
@@ -122,124 +129,208 @@ export default function GeofenceRadar() {
       deviceLoc.lng,
     );
 
-    // Map offsets to percentages (50% is center, +/- 50% is edge)
-    deviceX = 50 + (dx / RADAR_RANGE_M) * 50;
-    deviceY = 50 - (dy / RADAR_RANGE_M) * 50; // Subtract because Y is inverted in CSS
-
-    // Clamp to UI bounds so it doesn't fly off screen
-    deviceX = Math.max(0, Math.min(100, deviceX));
-    deviceY = Math.max(0, Math.min(100, deviceY));
+    deviceX = 100 + dx;
+    deviceY = 100 - dy;
+    accuracyR = deviceLoc.accuracy;
   }
 
-  const isSuccess = deviceLoc?.distance <= GEOFENCE_RADIUS_M;
+  const isSuccess =
+    deviceLoc?.distance !== null && deviceLoc?.distance <= GEOFENCE_RADIUS_M;
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md mx-auto p-6 bg-gray-900 text-green-400 font-mono rounded-xl shadow-2xl">
-      <h2 className="text-xl font-bold mb-4 text-white">Geofence Uplink</h2>
+    <div className="flex flex-col items-center w-full max-w-md mx-auto p-6 bg-slate-950 text-emerald-500 font-mono rounded-xl shadow-2xl border border-slate-800">
+      <div className="w-full flex justify-between items-center mb-6 border-b border-emerald-900/50 pb-2">
+        <h2 className="text-lg font-bold tracking-widest uppercase">
+          Geofence Uplink
+        </h2>
+        <span className="text-xs bg-slate-900 px-2 py-1 rounded text-emerald-600">
+          v2.1.0
+        </span>
+      </div>
 
-      {/* Input Section */}
-      <div className="w-full space-y-3 mb-6">
-        <div>
-          <label className="block text-xs mb-1 text-gray-400">
-            Target Latitude
-          </label>
-          <input
-            type="number"
-            value={targetLat}
-            onChange={(e) => setTargetLat(e.target.value)}
-            disabled={tracking}
-            className="w-full bg-gray-800 text-white p-2 rounded border border-gray-700 focus:border-green-500 outline-none"
-            placeholder="e.g. 20.2960"
-          />
-        </div>
-        <div>
-          <label className="block text-xs mb-1 text-gray-400">
-            Target Longitude
-          </label>
-          <input
-            type="number"
-            value={targetLng}
-            onChange={(e) => setTargetLng(e.target.value)}
-            disabled={tracking}
-            className="w-full bg-gray-800 text-white p-2 rounded border border-gray-700 focus:border-green-500 outline-none"
-            placeholder="e.g. 85.8245"
-          />
+      <div className="w-full space-y-4 mb-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[10px] uppercase tracking-wider mb-1 text-slate-500">
+              Latitude
+            </label>
+            <input
+              type="number"
+              value={targetLat}
+              onChange={(e) => setTargetLat(e.target.value)}
+              disabled={tracking}
+              className="w-full bg-slate-900 text-emerald-400 p-2 text-sm rounded border border-slate-700 focus:border-emerald-500 outline-none placeholder-slate-700"
+              placeholder="20.2960"
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] uppercase tracking-wider mb-1 text-slate-500">
+              Longitude
+            </label>
+            <input
+              type="number"
+              value={targetLng}
+              onChange={(e) => setTargetLng(e.target.value)}
+              disabled={tracking}
+              className="w-full bg-slate-900 text-emerald-400 p-2 text-sm rounded border border-slate-700 focus:border-emerald-500 outline-none placeholder-slate-700"
+              placeholder="85.8245"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="flex w-full gap-4 mb-6">
+      <div className="flex w-full gap-4 mb-8">
         {!tracking ? (
           <button
             onClick={startTracking}
-            className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded transition-colors"
+            className="flex-1 bg-emerald-900/40 hover:bg-emerald-800/60 border border-emerald-700 text-emerald-400 font-bold py-2 px-4 rounded text-sm uppercase tracking-wider transition-all"
           >
-            Initiate Tracking
+            Initiate Scan
           </button>
         ) : (
           <button
             onClick={stopTracking}
-            className="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded transition-colors"
+            className="flex-1 bg-red-900/40 hover:bg-red-800/60 border border-red-700 text-red-400 font-bold py-2 px-4 rounded text-sm uppercase tracking-wider transition-all"
           >
-            Abort
+            Abort Tracking
           </button>
         )}
       </div>
 
-      {/* Radar Display */}
-      <div className="relative w-64 h-64 bg-gray-800 rounded-full border-2 border-green-500 overflow-hidden flex items-center justify-center mb-6 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-        {/* Radar Rings & Crosshairs */}
-        <div className="absolute w-full h-full rounded-full border border-green-800/50"></div>
-        <div className="absolute w-1/2 h-1/2 rounded-full border border-green-500/50"></div>{" "}
-        {/* 50m geofence line */}
-        <div className="absolute w-full h-px bg-green-800/50"></div>
-        <div className="absolute h-full w-px bg-green-800/50"></div>
-        {/* Sweep Animation */}
+      {/* Radar Canvas Container */}
+      <div className="relative w-72 h-72 rounded-full border-4 border-slate-800 overflow-hidden bg-slate-900 shadow-[0_0_30px_rgba(16,185,129,0.1)] flex items-center justify-center mb-6">
+        {/* The SVG Plane */}
+        <svg
+          viewBox="0 0 200 200"
+          className="absolute inset-0 w-full h-full z-10"
+        >
+          <defs>
+            {/* The geofence boundary used as a mask for the overlap */}
+            <clipPath id="geofence-clip">
+              <circle cx="100" cy="100" r={GEOFENCE_RADIUS_M} />
+            </clipPath>
+          </defs>
+
+          {/* Grid lines */}
+          <line
+            x1="100"
+            y1="0"
+            x2="100"
+            y2="200"
+            stroke="#064e3b"
+            strokeWidth="1"
+          />
+          <line
+            x1="0"
+            y1="100"
+            x2="200"
+            y2="100"
+            stroke="#064e3b"
+            strokeWidth="1"
+          />
+
+          {/* Outer Range Ring (100m) */}
+          <circle
+            cx="100"
+            cy="100"
+            r="99"
+            fill="none"
+            stroke="#064e3b"
+            strokeWidth="1"
+          />
+
+          {/* Geofence Target Ring (50m) */}
+          <circle
+            cx="100"
+            cy="100"
+            r={GEOFENCE_RADIUS_M}
+            fill="rgba(16, 185, 129, 0.05)"
+            stroke="#10b981"
+            strokeWidth="1.5"
+            strokeDasharray="4 4"
+          />
+          {/* Target Center Point */}
+          <circle cx="100" cy="100" r="2" fill="#10b981" />
+
+          {/* Device Location Rendering */}
+          {deviceLoc && (
+            <g className="transition-all duration-700 ease-linear">
+              {/* Device Base Accuracy Radius */}
+              <circle
+                cx={deviceX}
+                cy={deviceY}
+                r={accuracyR}
+                fill={
+                  isSuccess
+                    ? "rgba(56, 189, 248, 0.15)"
+                    : "rgba(239, 68, 68, 0.15)"
+                }
+                stroke={
+                  isSuccess
+                    ? "rgba(56, 189, 248, 0.4)"
+                    : "rgba(239, 68, 68, 0.4)"
+                }
+                strokeWidth="1"
+              />
+
+              {/* Device Accuracy OVERLAP Highlighting */}
+              <circle
+                cx={deviceX}
+                cy={deviceY}
+                r={accuracyR}
+                fill={
+                  isSuccess
+                    ? "rgba(56, 189, 248, 0.4)"
+                    : "rgba(245, 158, 11, 0.4)"
+                }
+                clipPath="url(#geofence-clip)"
+              />
+
+              {/* Device Dot */}
+              <circle
+                cx={deviceX}
+                cy={deviceY}
+                r="3"
+                fill={isSuccess ? "#38bdf8" : "#ef4444"}
+              />
+            </g>
+          )}
+        </svg>
+
+        {/* CSS Sweep Animation Layer (Stays behind SVG data if needed, or in front for visual effect) */}
         {tracking && (
           <div
-            className="absolute w-full h-full rounded-full border-t-2 border-green-400 animate-spin"
+            className="absolute inset-0 rounded-full border-t border-emerald-400 z-20 mix-blend-screen pointer-events-none"
             style={{
-              animationDuration: "3s",
+              animation: "spin 3s linear infinite",
               background:
-                "conic-gradient(from 0deg, transparent 70%, rgba(34, 197, 94, 0.2) 100%)",
+                "conic-gradient(from 0deg, transparent 75%, rgba(16, 185, 129, 0.25) 100%)",
             }}
           ></div>
         )}
-        {/* Target Dot (Center) */}
-        <div className="absolute w-3 h-3 bg-white rounded-full z-10 shadow-[0_0_10px_white]"></div>
-        {/* Device Dot */}
-        {deviceLoc && (
-          <div
-            className="absolute z-20 flex items-center justify-center transition-all duration-700 ease-in-out"
-            style={{
-              left: `${deviceX}%`,
-              top: `${deviceY}%`,
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            {/* Accuracy Radius Indicator */}
-            <div
-              className={`absolute rounded-full border ${isSuccess ? "border-blue-400 bg-blue-400/20" : "border-red-400 bg-red-400/20"}`}
-              style={{
-                width: `${(deviceLoc.accuracy / RADAR_RANGE_M) * 100 * 2}%`,
-                height: `${(deviceLoc.accuracy / RADAR_RANGE_M) * 100 * 2}%`,
-              }}
-            ></div>
-            <div
-              className={`w-3 h-3 rounded-full ${isSuccess ? "bg-blue-400" : "bg-red-500"} shadow-[0_0_10px_currentColor]`}
-            ></div>
-          </div>
-        )}
       </div>
 
-      {/* Status Log */}
-      <div className="w-full bg-black p-3 rounded border border-gray-800 h-20 flex items-center justify-center text-center">
+      {/* Terminal Log */}
+      <div className="w-full bg-black p-3 rounded border border-slate-800 flex items-center justify-start h-16 overflow-hidden relative">
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-700"></div>
         <p
-          className={`text-sm ${isSuccess ? "text-blue-400 font-bold animate-pulse" : "text-green-400"}`}
+          className={`text-xs pl-2 font-mono tracking-tight ${isSuccess ? "text-sky-400" : "text-emerald-500"}`}
         >
+          <span className="opacity-50">&gt;_ </span>
           {statusMsg}
         </p>
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 }
