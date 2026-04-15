@@ -49,6 +49,9 @@ const THEMES = {
       "--text-ghost": "rgba(161,161,170,0.4)",
       "--text-dim": "rgba(161,161,170,0.7)",
       "--text-mid": "rgba(212,212,216,0.85)",
+      "--sweep-a": "rgba(212,212,216,0.06)",
+      "--sweep-b": "rgba(212,212,216,0.15)",
+      "--sweep-c": "rgba(212,212,216,0.3)",
     },
     svg: {
       gridLine: "#27272a",
@@ -101,6 +104,9 @@ const THEMES = {
       "--text-ghost": "rgba(0,255,136,0.4)",
       "--text-dim": "rgba(0,255,136,0.65)",
       "--text-mid": "rgba(0,255,136,0.85)",
+      "--sweep-a": "rgba(0,255,136,0.08)",
+      "--sweep-b": "rgba(0,255,136,0.2)",
+      "--sweep-c": "rgba(0,255,136,0.4)",
     },
     svg: {
       gridLine: "#003d1f",
@@ -153,6 +159,9 @@ const THEMES = {
       "--text-ghost": "rgba(255,45,149,0.4)",
       "--text-dim": "rgba(255,120,190,0.7)",
       "--text-mid": "rgba(255,160,210,0.85)",
+      "--sweep-a": "rgba(255,45,149,0.08)",
+      "--sweep-b": "rgba(255,45,149,0.2)",
+      "--sweep-c": "rgba(255,45,149,0.4)",
     },
     svg: {
       gridLine: "#3d0025",
@@ -205,6 +214,9 @@ const THEMES = {
       "--text-ghost": "rgba(6,214,160,0.4)",
       "--text-dim": "rgba(6,214,160,0.65)",
       "--text-mid": "rgba(6,214,160,0.85)",
+      "--sweep-a": "rgba(6,214,160,0.08)",
+      "--sweep-b": "rgba(6,214,160,0.2)",
+      "--sweep-c": "rgba(6,214,160,0.4)",
     },
     svg: {
       gridLine: "#023d2e",
@@ -257,6 +269,9 @@ const THEMES = {
       "--text-ghost": "rgba(255,179,0,0.4)",
       "--text-dim": "rgba(255,200,80,0.65)",
       "--text-mid": "rgba(255,220,130,0.85)",
+      "--sweep-a": "rgba(255,179,0,0.08)",
+      "--sweep-b": "rgba(255,179,0,0.2)",
+      "--sweep-c": "rgba(255,179,0,0.4)",
     },
     svg: {
       gridLine: "#3d2800",

@@ -21,6 +21,9 @@
   --text-ghost: rgba(161, 161, 170, 0.4);
   --text-dim: rgba(161, 161, 170, 0.7);
   --text-mid: rgba(212, 212, 216, 0.85);
+  --sweep-a: rgba(212, 212, 216, 0.06);
+  --sweep-b: rgba(212, 212, 216, 0.15);
+  --sweep-c: rgba(212, 212, 216, 0.3);
 }
 
 * {
@@ -470,6 +473,8 @@ body,
   width: 90%;
   max-width: 680px;
   aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
   z-index: 5;
 }
 
@@ -478,6 +483,7 @@ body,
   position: absolute;
   inset: 0;
   border-radius: 50%;
+  overflow: hidden;
   pointer-events: none;
   animation: sweep-rotate 4s linear infinite;
   z-index: 6;
@@ -492,16 +498,16 @@ body,
     from 0deg,
     transparent 0%,
     transparent 70%,
-    var(--phosphor-glow) 85%,
-    var(--border-bright) 97%,
-    var(--phosphor-dim) 100%
+    var(--sweep-a) 85%,
+    var(--sweep-b) 97%,
+    var(--sweep-c) 100%
   );
-  mask-image: radial-gradient(circle, black 0%, black 48%, transparent 50%);
+  mask-image: radial-gradient(circle, black 0%, black 98%, transparent 100%);
   -webkit-mask-image: radial-gradient(
     circle,
     black 0%,
-    black 48%,
-    transparent 50%
+    black 98%,
+    transparent 100%
   );
 }
 
