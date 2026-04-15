@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 
 const R = 6371e3; // Earth radius in meters
 
@@ -306,6 +307,9 @@ const THEMES = {
 const THEME_KEYS = Object.keys(THEMES);
 
 export default function App() {
+  // Route params — allows /:lat/:lng to pre-fill fence center
+  const { lat: routeLat, lng: routeLng } = useParams();
+
   // Theme State
   const [themeKey, setThemeKey] = useState(() => {
     try { return localStorage.getItem("radar-theme") || "chrome"; }
@@ -320,9 +324,15 @@ export default function App() {
     try { localStorage.setItem("radar-theme", themeKey); } catch {}
   }, [themeKey, theme]);
 
-  // Configuration State
-  const [fenceLat, setFenceLat] = useState("20.2961");
-  const [fenceLng, setFenceLng] = useState("85.8245");
+  // Configuration State — route params override defaults when valid
+  const [fenceLat, setFenceLat] = useState(() => {
+    const parsed = parseFloat(routeLat);
+    return !isNaN(parsed) ? String(parsed) : "20.2961";
+  });
+  const [fenceLng, setFenceLng] = useState(() => {
+    const parsed = parseFloat(routeLng);
+    return !isNaN(parsed) ? String(parsed) : "85.8245";
+  });
   const [geofenceRadius, setGeofenceRadius] = useState(50);
   const [radarRange, setRadarRange] = useState(200);
 
