@@ -6,21 +6,21 @@
   --phosphor-dim: #00cc6a;
   --phosphor-dark: #003d1f;
   --phosphor-glow: rgba(0, 255, 136, 0.15);
-  --amber: #ffaa00;
+  --amber: #ffcc33;
   --amber-dim: #cc8800;
-  --threat: #ff3344;
+  --threat: #ff4455;
   --threat-dim: #aa2233;
-  --safe: #00ddff;
+  --safe: #33eeff;
   --safe-dim: #0099bb;
   --bg-deep: #030a06;
-  --bg-panel: #040d07;
+  --bg-panel: #050e08;
   --bg-input: #020805;
-  --border-subtle: rgba(0, 255, 136, 0.08);
-  --border-med: rgba(0, 255, 136, 0.15);
-  --border-bright: rgba(0, 255, 136, 0.3);
-  --text-ghost: rgba(0, 255, 136, 0.25);
-  --text-dim: rgba(0, 255, 136, 0.5);
-  --text-mid: rgba(0, 255, 136, 0.7);
+  --border-subtle: rgba(0, 255, 136, 0.1);
+  --border-med: rgba(0, 255, 136, 0.18);
+  --border-bright: rgba(0, 255, 136, 0.35);
+  --text-ghost: rgba(0, 255, 136, 0.4);
+  --text-dim: rgba(0, 255, 136, 0.65);
+  --text-mid: rgba(0, 255, 136, 0.85);
 }
 
 * {
@@ -52,7 +52,7 @@ html, body, #root {
 /* ── LAYOUT ── */
 .radar-shell {
   display: grid;
-  grid-template-columns: 280px 1fr 280px;
+  grid-template-columns: 300px 1fr 300px;
   grid-template-rows: 1fr;
   height: 100vh;
   width: 100vw;
@@ -61,7 +61,7 @@ html, body, #root {
 
 @media (max-width: 1100px) {
   .radar-shell {
-    grid-template-columns: 240px 1fr 240px;
+    grid-template-columns: 260px 1fr 260px;
   }
 }
 
@@ -93,7 +93,7 @@ html, body, #root {
 }
 
 .panel-header {
-  padding: 14px 16px 10px;
+  padding: 16px 20px 12px;
   border-bottom: 1px solid var(--border-subtle);
   background: rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
@@ -101,28 +101,28 @@ html, body, #root {
 
 .panel-header h2 {
   font-family: 'Orbitron', sans-serif;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--text-mid);
+  color: var(--phosphor);
 }
 
 .panel-body {
   flex: 1;
   overflow-y: auto;
-  padding: 14px 16px;
+  padding: 16px 20px;
 }
 
 /* ── SECTION DIVIDERS ── */
 .section-label {
   font-family: 'Orbitron', sans-serif;
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--text-ghost);
-  padding-bottom: 6px;
-  margin-bottom: 10px;
+  color: var(--text-dim);
+  padding-bottom: 7px;
+  margin-bottom: 12px;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -138,11 +138,11 @@ html, body, #root {
 /* ── FORM CONTROLS ── */
 .field-label {
   display: block;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
 .field-input {
@@ -150,9 +150,9 @@ html, body, #root {
   background: var(--bg-input);
   color: var(--phosphor);
   font-family: 'Share Tech Mono', monospace;
-  font-size: 13px;
-  padding: 7px 10px;
-  border: 1px solid var(--border-subtle);
+  font-size: 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--border-med);
   border-radius: 2px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -179,9 +179,9 @@ html, body, #root {
 /* ── MAIN ACTION BUTTON ── */
 .btn-engage {
   width: 100%;
-  padding: 12px 0;
+  padding: 14px 0;
   font-family: 'Orbitron', sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
@@ -219,30 +219,30 @@ html, body, #root {
 .telem-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
+  gap: 4px;
 }
 
 .telem-cell {
   background: rgba(0, 0, 0, 0.3);
-  padding: 10px 10px 8px;
+  padding: 12px 12px 10px;
   border: 1px solid var(--border-subtle);
   border-radius: 2px;
 }
 
 .telem-label {
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--text-ghost);
-  margin-bottom: 3px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
 }
 
 .telem-value {
   font-family: 'Orbitron', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--phosphor);
-  line-height: 1;
+  line-height: 1.2;
 }
 
 .telem-value.alert {
@@ -259,7 +259,7 @@ html, body, #root {
 
 .telem-value.na {
   color: var(--text-ghost);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 /* ── STATUS INDICATOR ── */
@@ -271,8 +271,8 @@ html, body, #root {
 }
 
 .status-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -289,7 +289,7 @@ html, body, #root {
 
 .status-text {
   font-family: 'Orbitron', sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -304,24 +304,24 @@ html, body, #root {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border-subtle);
   border-radius: 2px;
-  padding: 8px 10px;
+  padding: 10px 12px;
 }
 
 .coord-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 2px 0;
+  padding: 3px 0;
 }
 
 .coord-key {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 1.5px;
   color: var(--text-dim);
 }
 
 .coord-val {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   color: var(--phosphor);
   font-family: 'Share Tech Mono', monospace;
@@ -338,10 +338,10 @@ html, body, #root {
 
 .log-header {
   font-family: 'Orbitron', sans-serif;
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 2px;
-  padding: 6px 12px;
-  color: var(--text-ghost);
+  padding: 8px 14px;
+  color: var(--text-dim);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   justify-content: space-between;
@@ -351,9 +351,9 @@ html, body, #root {
 .log-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 12px;
-  font-size: 10px;
-  line-height: 1.6;
+  padding: 10px 14px;
+  font-size: 11px;
+  line-height: 1.7;
 }
 
 .log-entry {
@@ -363,7 +363,7 @@ html, body, #root {
 }
 
 .log-ts {
-  color: var(--text-ghost);
+  color: var(--text-dim);
   flex-shrink: 0;
 }
 
@@ -466,9 +466,10 @@ html, body, #root {
 .corner-hud {
   position: absolute;
   z-index: 8;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1.5px;
-  color: var(--text-dim);
+  line-height: 1.6;
+  color: var(--text-mid);
   pointer-events: none;
 }
 
@@ -501,11 +502,11 @@ html, body, #root {
 .perimeter-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
+  gap: 6px;
+  padding: 7px 12px;
   border-radius: 2px;
   font-family: 'Orbitron', sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 2px;
 }
@@ -532,10 +533,10 @@ html, body, #root {
 .cardinal {
   position: absolute;
   font-family: 'Orbitron', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 2px;
-  color: var(--text-ghost);
+  color: var(--text-dim);
   z-index: 7;
   pointer-events: none;
 }
@@ -546,7 +547,7 @@ html, body, #root {
 .cardinal.w { left: 4%; top: 50%; transform: translateY(-50%); }
 
 /* ── UTIL ── */
-.space-y > * + * { margin-top: 10px; }
-.space-y-sm > * + * { margin-top: 6px; }
-.mt-sm { margin-top: 8px; }
-.mt-md { margin-top: 14px; }
+.space-y > * + * { margin-top: 12px; }
+.space-y-sm > * + * { margin-top: 8px; }
+.mt-sm { margin-top: 10px; }
+.mt-md { margin-top: 16px; }

@@ -271,7 +271,7 @@ export default function App() {
             <div className="dist-bar-container">
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
                 <span className="field-label" style={{ marginBottom: 0 }}>Range</span>
-                <span style={{ fontSize: "9px", color: "var(--text-dim)", letterSpacing: "1px" }}>
+                <span style={{ fontSize: "11px", color: "var(--text-dim)", letterSpacing: "1px" }}>
                   {deviceLoc.distance.toFixed(0)}m / {radarRange}m
                 </span>
               </div>
@@ -399,11 +399,11 @@ export default function App() {
                 />
                 <text
                   x={CENTER + 6}
-                  y={CENTER - CENTER * mult + 12}
-                  fill="#003d1f"
-                  fontSize="10"
+                  y={CENTER - CENTER * mult + 14}
+                  fill="#00663a"
+                  fontSize="12"
                   fontFamily="'Orbitron', monospace"
-                  opacity="0.7"
+                  opacity="0.8"
                 >
                   {(radarRange * mult).toFixed(0)}m
                 </text>
@@ -427,9 +427,9 @@ export default function App() {
             {/* Target label */}
             <text
               x={CENTER + 10} y={CENTER - 10}
-              fill="#00ff88" fontSize="10"
+              fill="#00ff88" fontSize="12"
               fontFamily="'Orbitron', monospace" fontWeight="600"
-              opacity="0.8"
+              opacity="0.9"
             >
               TGT
             </text>
@@ -498,21 +498,21 @@ export default function App() {
 
                 {/* Device label */}
                 <text
-                  x={deviceSvgX + 14} y={deviceSvgY - 6}
-                  fill={isSuccess ? "#00ddff" : "#fff"}
-                  fontSize="9"
+                  x={deviceSvgX + 14} y={deviceSvgY - 7}
+                  fill={isSuccess ? "#33eeff" : "#fff"}
+                  fontSize="11"
                   fontFamily="'Orbitron', monospace"
                   fontWeight="600"
-                  opacity="0.8"
+                  opacity="0.9"
                 >
                   UPLINK
                 </text>
                 <text
-                  x={deviceSvgX + 14} y={deviceSvgY + 6}
-                  fill={isSuccess ? "#00ddff" : "#fff"}
-                  fontSize="8"
+                  x={deviceSvgX + 14} y={deviceSvgY + 7}
+                  fill={isSuccess ? "#33eeff" : "#fff"}
+                  fontSize="10"
                   fontFamily="'Share Tech Mono', monospace"
-                  opacity="0.5"
+                  opacity="0.7"
                 >
                   {deviceLoc.distance.toFixed(0)}m
                 </text>
@@ -550,7 +550,7 @@ export default function App() {
                   {deviceLoc?.distance != null ? `${deviceLoc.distance.toFixed(1)}` : "---"}
                 </div>
                 {deviceLoc?.distance != null && (
-                  <span style={{ fontSize: "9px", color: "var(--text-ghost)", letterSpacing: "1px" }}>METERS</span>
+                  <span style={{ fontSize: "10px", color: "var(--text-dim)", letterSpacing: "1px" }}>METERS</span>
                 )}
               </div>
               <div className="telem-cell">
@@ -559,7 +559,7 @@ export default function App() {
                   {deviceLoc?.accuracy != null ? `±${deviceLoc.accuracy.toFixed(1)}` : "---"}
                 </div>
                 {deviceLoc?.accuracy != null && (
-                  <span style={{ fontSize: "9px", color: "var(--text-ghost)", letterSpacing: "1px" }}>METERS</span>
+                  <span style={{ fontSize: "10px", color: "var(--text-dim)", letterSpacing: "1px" }}>METERS</span>
                 )}
               </div>
               <div className="telem-cell">
@@ -567,7 +567,7 @@ export default function App() {
                 <div className={`telem-value ${deviceLoc ? "" : "na"}`}>
                   {deviceLoc?.speed != null ? `${(deviceLoc.speed * 3.6).toFixed(1)}` : "0.0"}
                 </div>
-                <span style={{ fontSize: "9px", color: "var(--text-ghost)", letterSpacing: "1px" }}>KM/H</span>
+                <span style={{ fontSize: "10px", color: "var(--text-dim)", letterSpacing: "1px" }}>KM/H</span>
               </div>
               <div className="telem-cell">
                 <div className="telem-label">Heading</div>
@@ -575,7 +575,7 @@ export default function App() {
                   {deviceLoc?.heading != null ? `${deviceLoc.heading.toFixed(0)}°` : "---"}
                 </div>
                 {deviceLoc?.heading != null && (
-                  <span style={{ fontSize: "9px", color: "var(--text-ghost)", letterSpacing: "1px" }}>DEG</span>
+                  <span style={{ fontSize: "10px", color: "var(--text-dim)", letterSpacing: "1px" }}>DEG</span>
                 )}
               </div>
             </div>
@@ -640,7 +640,7 @@ export default function App() {
           {trail.length > 0 && (
             <div>
               <div className="section-label">Trail ({trail.length} pts)</div>
-              <div style={{ maxHeight: "120px", overflowY: "auto", fontSize: "9px", color: "var(--text-dim)", lineHeight: "1.8" }}>
+              <div style={{ maxHeight: "120px", overflowY: "auto", fontSize: "10px", color: "var(--text-dim)", lineHeight: "2" }}>
                 {trail.map((t, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", opacity: 0.4 + (i / trail.length) * 0.6 }}>
                     <span>#{i + 1}</span>
